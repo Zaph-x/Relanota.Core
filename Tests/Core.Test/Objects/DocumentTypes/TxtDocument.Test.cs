@@ -19,10 +19,7 @@ namespace Core.Test.Objects.DocumentTypes
         [SetUp]
         public void SetUp()
         {
-            note = new Note { Name = "My cool Note", Content = @"This is a note
-It is multiline.
-It contains some text
-Maybe even tags" };
+            note = new Note { Name = "My cool Note", Content = $"This is a note{Environment.NewLine}It is multiline.{Environment.NewLine}It contains some text{Environment.NewLine}Maybe even tags" };
             noteTags = new List<Tag> { new Tag { Name = "Test Tag" }, new Tag { Name = "Other tag" } }
                     .Select(tag => new NoteTag() { Note = note, Tag = tag }).ToList();
             foreach (NoteTag noteTag in noteTags)
@@ -70,7 +67,7 @@ Maybe even tags" };
         public void Test_ConvertNote_ShouldConvertEntireNote()
         {
             string expected = $"################{Environment.NewLine}# My cool Note #{Environment.NewLine}################{Environment.NewLine}";
-            expected += $"Tags: Test Tag, Other tag{Environment.NewLine.Repeat(3)}";
+            expected += $"Tags: Test Tag, Other tag{Environment.NewLine}";
             expected += $"Content:{Environment.NewLine}This is a note{Environment.NewLine}It is multiline.{Environment.NewLine}It contains some text{Environment.NewLine}Maybe even tags{Environment.NewLine.Repeat(2)}";
 
             string actual = doc.ConvertNote(note);
@@ -82,9 +79,9 @@ Maybe even tags" };
         public void Test_Export_WritesToStream()
         {
 
-            string expected = $"################{Environment.NewLine}# My cool Note #{Environment.NewLine}################{Environment.NewLine}";
-            expected += $"Tags: Test Tag, Other tag{Environment.NewLine.Repeat(3)}";
-            expected += $"Content:{Environment.NewLine}This is a note{Environment.NewLine}It is multiline.{Environment.NewLine}It contains some text{Environment.NewLine}Maybe even tags{Environment.NewLine.Repeat(2)}";
+            string expected = $"Other tag{Environment.NewLine}\tMy cool Note{Environment.NewLine}Test Tag{Environment.NewLine}\tMy cool Note{Environment.NewLine.Repeat(4)}"
+            + $"################{Environment.NewLine}# My cool Note #{Environment.NewLine}################{Environment.NewLine}Tags: Test Tag, Other tag{Environment.NewLine}"
+            + $"Content:{Environment.NewLine}This is a note{Environment.NewLine}It is multiline.{Environment.NewLine}It contains some text{Environment.NewLine}Maybe even tags{Environment.NewLine.Repeat(2)}";
 
             using (MemoryStream memStream = new MemoryStream())
             {
