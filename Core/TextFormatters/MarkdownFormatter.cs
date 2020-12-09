@@ -28,7 +28,7 @@ namespace Core.TextFormatters
                     {
 
                     }
-                    else if (text[start..(start + 2)] == "**")
+                    else if (text.Substring(start,(start + 2)) == "**")
                     {
 
                     }
@@ -44,15 +44,15 @@ namespace Core.TextFormatters
                 case Formatting.Bold:
                     if (end + 2 > text.Length)
                     {
-                        return text[(end - 2)..end] == "**";
+                        return text.Substring((end - 2),end) == "**";
                     }
                     else if (end + 1 > text.Length)
                     {
-                        return text[(end - 2)..end] == "**" ||
-                                text[(end - 1)..(end + 1)] == "**" ||
-                                text[end..(end + 2)] == "**";
+                        return text.Substring((end - 2),end) == "**" ||
+                                text.Substring((end - 1),(end+1)) == "**" ||
+                                text.Substring(end,end+2) == "**";
                     }
-                    else if (text[end..(end + 2)] == "**")
+                    else if (text.Substring(end,end+2) == "**")
                     {
 
                     }
