@@ -17,6 +17,10 @@ namespace Core.Objects.Wrappers
             Size = size;
         }
 
+        public new void Add(T obj) {
+
+        }
+
         public void Insert(T obj)
         {
             bool preRemoved = false;
@@ -27,10 +31,30 @@ namespace Core.Objects.Wrappers
             }
             base.Insert(0, obj);
             if (preRemoved) return;
-            
+
             lock (Lock)
             {
-                for (int i = base.Count-1; i >= Size; i--)
+                for (int i = base.Count - 1; i >= Size; i--)
+                {
+                    base.RemoveAt(i);
+                }
+            }
+        }
+
+        public new void Insert(int index, T obj)
+        {
+            bool preRemoved = false;
+            if (base.Items.Any(o => o.Equals(obj)))
+            {
+                preRemoved = true;
+                base.Items.Remove(obj);
+            }
+            base.Insert(index, obj);
+            if (preRemoved) return;
+
+            lock (Lock)
+            {
+                for (int i = base.Count - 1; i >= Size; i--)
                 {
                     base.RemoveAt(i);
                 }
@@ -40,7 +64,30 @@ namespace Core.Objects.Wrappers
         public new void Remove(T obj)
         {
             LastRemoveIndex = base.IndexOf(obj);
-            base.RemoveAt(LastRemoveIndex);
+            lock (Lock)
+            {
+                base.RemoveAt(LastRemoveIndex);
+            }
         }
+
+        public void RemoveLast()
+        {
+            lock (Lock)
+            {
+                base.RemoveAt(base.Count - 1);
+            }
+        }
+        public void RemoveFirst()
+        {
+            lock (Lock)
+            {
+                base.RemoveAt(0);
+            }
+        }
+
+        public T Last => base[base.Count - 1];
+        public T First => base[0];
+
+
     }
 }
