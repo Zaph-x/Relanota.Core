@@ -29,7 +29,7 @@ namespace Core.Objects.DocumentTypes
             return $"{ConvertRelations(Notes)}{string.Join("", Notes.Select(note => ConvertNote(note)))}";
         }
 
-        public string ConvertTags(List<NoteTag> noteTags)
+        public string ConvertTags(IList<NoteTag> noteTags)
         {
             return $"Tags: {string.Join(", ", noteTags.Select(noteTag => noteTag.Tag.Name))}{Environment.NewLine}";
         }

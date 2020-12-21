@@ -52,7 +52,7 @@ namespace Core.Test.Objects.DocumentTypes
             return $"{content}{Environment.NewLine.Repeat(3)}";
         }
 
-        public string ConvertTags(List<NoteTag> noteTags)
+        public string ConvertTags(IList<NoteTag> noteTags)
         {
             return $"**Tags:** {string.Join(", ", noteTags.Select(nt => $"[{nt.Tag.Name}](#Relations)"))}{Environment.NewLine.Repeat(2)}";
         }

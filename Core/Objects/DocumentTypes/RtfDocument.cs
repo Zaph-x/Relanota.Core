@@ -34,7 +34,7 @@ namespace Core.Test.Objects.DocumentTypes
             throw new NotImplementedException();
         }
 
-        public string ConvertTags(List<NoteTag> noteTags)
+        public string ConvertTags(IList<NoteTag> noteTags)
         {
             throw new NotImplementedException();
         }

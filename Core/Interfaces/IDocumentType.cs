@@ -14,7 +14,7 @@ namespace Core.Interfaces
         string ConvertRelations(List<Note> notes);
         string ConvertNote(Note note);
         string ConvertTitle(string title);
-        string ConvertTags(List<NoteTag> noteTags);
+        string ConvertTags(IList<NoteTag> noteTags);
         string ConvertContent(string content);
     }
 }
