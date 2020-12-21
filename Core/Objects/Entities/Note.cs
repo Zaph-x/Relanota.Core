@@ -5,18 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Core.SqlHelper;
+using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Objects.Entities
 {
-    public class Note : IComparable
+    public class Note : IComparable, ISqlEntity
     {
+        [Key]
         public int Key { get; set; }
         public string Name { get; set; }
         public string Content { get; set; }
         [NotMapped]
         public bool HasChanges { get; set; }
-        public List<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
+        public IList<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
 
         /// <inheritdoc />
         public int CompareTo(object obj)
@@ -70,7 +73,7 @@ namespace Core.Objects.Entities
             context.SaveChanges();
         }
 
-        public static bool TryDeserialize(string serializedString, Database context, out Note note)
+        public static bool TryDeserialize(string serializedString, out Note note)
         {
             note = null;
             Match match = Regex.Match(serializedString, @"\|(.+?)\|(.+?)\|");
@@ -112,6 +115,11 @@ namespace Core.Objects.Entities
 #endif
                 return;
             } 
+        }
+
+        public void Save(Database context)
+        {
+            Save(this.Content, this.Name, context);
         }
     }
 }

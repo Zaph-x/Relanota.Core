@@ -29,9 +29,6 @@ namespace Core.Migrations
 
                     b.HasKey("Key");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("Notes");
                 });
 
@@ -47,7 +44,7 @@ namespace Core.Migrations
 
                     b.HasIndex("TagKey");
 
-                    b.ToTable("NoteTags");
+                    b.ToTable("NoteTag");
                 });
 
             modelBuilder.Entity("Core.Objects.Tag", b =>
@@ -77,6 +74,20 @@ namespace Core.Migrations
                         .HasForeignKey("TagKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Note");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("Core.Objects.Note", b =>
+                {
+                    b.Navigation("NoteTags");
+                });
+
+            modelBuilder.Entity("Core.Objects.Tag", b =>
+                {
+                    b.Navigation("NoteTags");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Core.Interfaces;
 using Core.SqlHelper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Objects.Entities
 {
-    public class Tag
+    public class Tag : ISqlEntity
     {
+        [Key]
         public int Key { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
+        public IList<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
 
         public void Save(string description, string name, Database context)
         {
@@ -44,6 +47,16 @@ namespace Core.Objects.Entities
 #endif
                 return;
             }
+        }
+
+        public bool IsInContext(Database context)
+        {
+            return context.Tags.AsEnumerable().Any(t => t.Key == this.Key || t.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public void Save(Database context)
+        {
+            this.Save(this.Description, this.Name, context);
         }
     }
 }

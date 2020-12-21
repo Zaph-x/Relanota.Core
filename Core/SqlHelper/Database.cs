@@ -11,12 +11,27 @@ namespace Core.SqlHelper
         public DbSet<Note> Notes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<NoteTag> NoteTags { get; set; }
-        public static string path = ".";
+        public DbSet<SuperTag> SuperTags { get; set; }
+        public string path = "./";
+        public string name = "notes.db";
+
+        public Database() :base()
+        {
+            path = Constants.DATABASE_PATH;
+            name = Constants.DATABASE_NAME;
+            Database.EnsureCreated();
+        }
+
+        public Database(string path = "", string name = "notes.db") : base()
+        {
+            this.path = path.Replace('\\', '/').EndsWith('/') ? path : $"{path}/";
+            this.name = name;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite($"Data Source={path}/notes.db");
             base.OnConfiguring(options);
+            options.UseSqlite($"Data Source={path}{name}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,38 +39,39 @@ namespace Core.SqlHelper
 
             modelBuilder.Entity<Note>().HasKey(nt => nt.Key);
             modelBuilder.Entity<Tag>().HasKey(t => t.Key);
+            modelBuilder.Entity<SuperTag>().HasKey(st => st.Key);
+            modelBuilder.Entity<NoteTag>().HasKey(nt => new { nt.NoteKey, nt.TagKey });
 
             modelBuilder.Entity<Tag>().HasIndex(t => t.Name).IsUnique();
             modelBuilder.Entity<Note>().HasIndex(nt => nt.Name).IsUnique();
+            modelBuilder.Entity<SuperTag>().HasIndex(st => st.Name).IsUnique();
 
-            modelBuilder.Entity<NoteTag>().HasKey(nt => new { nt.NoteKey, nt.TagKey });
 
             modelBuilder.Entity<NoteTag>()
                 .HasOne(nt => nt.Note)
                 .WithMany(note => note.NoteTags)
                 .HasForeignKey(nt => nt.NoteKey);
+
             modelBuilder.Entity<NoteTag>()
                 .HasOne(nt => nt.Tag)
                 .WithMany(t => t.NoteTags)
                 .HasForeignKey(nt => nt.TagKey);
 
+            modelBuilder.Entity<SuperTag>()
+                .HasMany(s => s.Tags)
+                .WithOne();
         }
 
 
-        public bool TryGetNote(string name, bool full, out Note note)
+        public bool TryGetNote(string name, out Note note)
         {
-            if (full)
-                note = this.Notes.Include(n => n.NoteTags).ThenInclude(n => n.Tag).AsEnumerable().FirstOrDefault(n => n.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-            else
-                note = this.Notes.FirstOrDefault(n => n.Name == name);
+            note = this.Notes.FirstOrDefault(n => n.Name == name);
             return note != null;
         }
-        public bool TryGetNote(int id, bool full, out Note note)
+
+        public bool TryGetNote(int id, out Note note)
         {
-            if (full)
-                note = this.Notes.Include(n => n.NoteTags).ThenInclude(n => n.Tag).AsEnumerable().FirstOrDefault(n => n.Key == id);
-            else
-                note = this.Notes.FirstOrDefault(n => n.Key == id);
+            note = this.Notes.FirstOrDefault(n => n.Key == id);
             return note != null;
         }
 
@@ -67,7 +83,7 @@ namespace Core.SqlHelper
 
         public bool TryGetNoteTag(Note note, Tag tag, out NoteTag noteTag)
         {
-            noteTag = NoteTags.FirstOrDefault(nt => nt.Note.Name.ToLower() == note.Name.ToLower() && nt.Tag.Name.ToLower() == tag.Name.ToLower()) 
+            noteTag = NoteTags.FirstOrDefault(nt => nt.Note.Name.ToLower() == note.Name.ToLower() && nt.Tag.Name.ToLower() == tag.Name.ToLower())
                       ?? new NoteTag() { Note = note, Tag = tag };
             return noteTag != null;
         }

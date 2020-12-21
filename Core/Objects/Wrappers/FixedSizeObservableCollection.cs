@@ -17,14 +17,44 @@ namespace Core.Objects.Wrappers
             Size = size;
         }
 
-        public new void Add(T obj) {
+        public new void Add(T obj)
+        {
+            Add(obj, false);
+        }
 
+        public void Add(T obj, bool isUnique)
+        {
+            bool preRemoved = false;
+            if (isUnique && base.Items.Any(o => o.Equals(obj)))
+            {
+                preRemoved = true;
+                base.Items.Remove(obj);
+            }
+            base.Add(obj);
+            if (preRemoved) return;
+            lock (Lock)
+            {
+                if (base.Count > Size)
+                {
+                    int i = 0;
+                    for (i = 0; i < Size; i++)
+                    {
+                        base[i] = base[i + 1];
+                    }
+                    base.RemoveAt(i);
+                }
+            }
         }
 
         public void Insert(T obj)
         {
+            Insert(obj, false);
+        }
+
+        public void Insert(T obj, bool isUnique)
+        {
             bool preRemoved = false;
-            if (base.Items.Any(o => o.Equals(obj)))
+            if (isUnique && base.Items.Any(o => o.Equals(obj)))
             {
                 preRemoved = true;
                 base.Items.Remove(obj);
@@ -43,8 +73,13 @@ namespace Core.Objects.Wrappers
 
         public new void Insert(int index, T obj)
         {
+            Insert(index, obj, false);
+        }
+
+        public void Insert(int index, T obj, bool isUnique)
+        {
             bool preRemoved = false;
-            if (base.Items.Any(o => o.Equals(obj)))
+            if (isUnique && base.Items.Any(o => o.Equals(obj)))
             {
                 preRemoved = true;
                 base.Items.Remove(obj);
