@@ -16,11 +16,12 @@ namespace Core.Test.Objects.Entities
         public void SetUp()
         {
             Constants.DATABASE_PATH = $"{TestContext.CurrentContext.TestDirectory}/assets/";
-            Constants.DATABASE_NAME = "Test_DB.db";
+            Constants.DATABASE_NAME = "Test_Note_DB.db";
             Directory.Delete(Constants.DATABASE_PATH, true);
             if (!Directory.Exists(Constants.DATABASE_PATH)) Directory.CreateDirectory(Constants.DATABASE_PATH);
             using Database database = new Database();
-            database.Database.EnsureCreated();
+
+            database.Database.Migrate();
 
             database.Notes.Clear();
             database.Tags.Clear();

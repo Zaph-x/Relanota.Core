@@ -14,11 +14,12 @@ namespace Core.Tests.SqlHelper
         public void SetUp()
         {
             Constants.DATABASE_PATH = $"{TestContext.CurrentContext.TestDirectory}/assets/";
-            Constants.DATABASE_NAME = "Test_DB.db";
+            Constants.DATABASE_NAME = "Test_Database_DB.db";
             if (!Directory.Exists(Constants.DATABASE_PATH)) Directory.CreateDirectory(Constants.DATABASE_PATH);
 
             using Database database = new Database();
-            database.Database.EnsureCreated();
+            
+            database.Database.Migrate();
 
             database.Notes.Clear();
             database.Tags.Clear();
