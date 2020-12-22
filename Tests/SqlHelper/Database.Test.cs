@@ -15,13 +15,15 @@ namespace Core.Tests.SqlHelper
         {
             Constants.DATABASE_PATH = $"{TestContext.CurrentContext.TestDirectory}/assets/";
             Constants.DATABASE_NAME = "Test_DB.db";
+            if (!Directory.Exists(Constants.DATABASE_PATH)) Directory.CreateDirectory(Constants.DATABASE_PATH);
+
             using Database database = new Database();
             database.Database.EnsureCreated();
-         
+
             database.Notes.Clear();
             database.Tags.Clear();
             database.NoteTags.Clear();
-            
+
             database.SaveChanges();
         }
 
@@ -33,8 +35,6 @@ namespace Core.Tests.SqlHelper
                 context.Database.EnsureCreated();
 
                 Assert.IsTrue(File.Exists($"{Constants.DATABASE_PATH}{$"Test_Database_CanCreateDatabase"}"), "Database was not created");
-
-                context.Database.EnsureDeleted();
 
                 Assert.IsFalse(File.Exists($"{Constants.DATABASE_PATH}{$"Test_Database_CanCreateDatabase"}"), "Database was not deleted again");
             }

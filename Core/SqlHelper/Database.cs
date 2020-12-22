@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Objects.Entities;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Core.SqlHelper
 {
@@ -15,23 +18,45 @@ namespace Core.SqlHelper
         public string path = "./";
         public string name = "notes.db";
 
-        public Database() :base()
+        public Database(DbContextOptions options) :base(options)
         {
+
             path = Constants.DATABASE_PATH;
             name = Constants.DATABASE_NAME;
-            Database.EnsureCreated();
         }
 
         public Database(string path = "", string name = "notes.db") : base()
         {
-            this.path = path.Replace('\\', '/').EndsWith('/') ? path : $"{path}/";
+            this.path = path.Replace('\\', '/').EndsWith("/") ? path : $"{path}/";
             this.name = name;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(options);
-            options.UseSqlite($"Data Source={path}{name}");
+            if (!optionsBuilder.IsConfigured)
+            {
+                string sqliteConnectionString = null;
+
+                try
+                {
+                    var connectionString = new SqliteConnectionStringBuilder()
+                    {
+                        DataSource = Path.Combine(path, name)
+                    };
+                    sqliteConnectionString = connectionString.ToString();
+                }
+                catch (InvalidOperationException)
+                {
+                    var connectionString = new SqliteConnectionStringBuilder()
+                    {
+                        DataSource = name
+                    };
+                    sqliteConnectionString = connectionString.ToString();
+                }
+
+                optionsBuilder.UseSqlite(sqliteConnectionString);
+            }
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -16,79 +16,68 @@ namespace Core.Migrations
                 .HasAnnotation("ProductVersion", "3.1.8");
 
             modelBuilder.Entity("Core.Objects.Note", b =>
-                {
-                    b.Property<int>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+            {
+                b.Property<int>("Key")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
 
-                    b.Property<string>("Content")
-                        .HasColumnType("TEXT");
+                b.Property<string>("Content")
+                    .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                b.Property<string>("Name")
+                    .HasColumnType("TEXT");
 
-                    b.HasKey("Key");
+                b.HasKey("Key");
 
-                    b.ToTable("Notes");
-                });
+                b.HasIndex("Name")
+                    .IsUnique();
 
-            modelBuilder.Entity("Core.Objects.NoteTag", b =>
-                {
-                    b.Property<int>("NoteKey")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TagKey")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("NoteKey", "TagKey");
-
-                    b.HasIndex("TagKey");
-
-                    b.ToTable("NoteTag");
-                });
-
-            modelBuilder.Entity("Core.Objects.Tag", b =>
-                {
-                    b.Property<int>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("Tags");
-                });
+                b.ToTable("Notes");
+            });
 
             modelBuilder.Entity("Core.Objects.NoteTag", b =>
-                {
-                    b.HasOne("Core.Objects.Note", "Note")
-                        .WithMany("NoteTags")
-                        .HasForeignKey("NoteKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.Property<int>("NoteKey")
+                    .HasColumnType("INTEGER");
 
-                    b.HasOne("Core.Objects.Tag", "Tag")
-                        .WithMany("NoteTags")
-                        .HasForeignKey("TagKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.Property<int>("TagKey")
+                    .HasColumnType("INTEGER");
 
-                    b.Navigation("Note");
+                b.HasKey("NoteKey", "TagKey");
 
-                    b.Navigation("Tag");
-                });
+                b.HasIndex("TagKey");
 
-            modelBuilder.Entity("Core.Objects.Note", b =>
-                {
-                    b.Navigation("NoteTags");
-                });
+                b.ToTable("NoteTags");
+            });
 
             modelBuilder.Entity("Core.Objects.Tag", b =>
-                {
-                    b.Navigation("NoteTags");
-                });
+            {
+                b.Property<int>("Key")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
+
+                b.Property<string>("Name")
+                    .HasColumnType("TEXT");
+
+                b.HasKey("Key");
+
+                b.ToTable("Tags");
+            });
+
+            modelBuilder.Entity("Core.Objects.NoteTag", b =>
+            {
+                b.HasOne("Core.Objects.Note", "Note")
+                    .WithMany("NoteTags")
+                    .HasForeignKey("NoteKey")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("Core.Objects.Tag", "Tag")
+                    .WithMany("NoteTags")
+                    .HasForeignKey("TagKey")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 #pragma warning restore 612, 618
         }
     }
