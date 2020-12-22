@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(Database))]
-    [Migration("20201222143615_Supertag")]
+    [Migration("20201222174007_Supertag")]
     partial class Supertag
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

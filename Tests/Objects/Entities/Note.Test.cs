@@ -21,6 +21,7 @@ namespace Core.Test.Objects.Entities
             if (!Directory.Exists(Constants.DATABASE_PATH)) Directory.CreateDirectory(Constants.DATABASE_PATH);
             using Database database = new Database();
 
+            database.Database.EnsureCreated();
             database.Database.Migrate();
 
             database.Notes.Clear();

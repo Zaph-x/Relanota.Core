@@ -19,6 +19,7 @@ namespace Core.Tests.SqlHelper
 
             using Database database = new Database();
             
+            database.Database.EnsureCreated();
             database.Database.Migrate();
 
             database.Notes.Clear();
@@ -35,9 +36,11 @@ namespace Core.Tests.SqlHelper
             {
                 context.Database.EnsureCreated();
 
-                Assert.IsTrue(File.Exists($"{Constants.DATABASE_PATH}{$"Test_Database_CanCreateDatabase"}"), "Database was not created");
+                Assert.IsTrue(File.Exists($"{Constants.DATABASE_PATH}{"Test_Database_CanCreateDatabase"}"), "Database was not created");
+                
+                context.Database.EnsureDeleted();
 
-                Assert.IsFalse(File.Exists($"{Constants.DATABASE_PATH}{$"Test_Database_CanCreateDatabase"}"), "Database was not deleted again");
+                Assert.IsFalse(File.Exists($"{Constants.DATABASE_PATH}{"Test_Database_CanCreateDatabase"}"), "Database was not deleted again");
             }
         }
 
