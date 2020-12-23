@@ -1,10 +1,7 @@
-using System.Reflection.Metadata;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Core.Objects.Entities;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,7 +15,7 @@ namespace Core.SqlHelper
         public DbSet<SuperTag> SuperTags { get; set; }
         public string path = "./";
         public string name = "notes.db";
-        public string ConnectionString => $"Data Source={path}{name}";
+        public string ConnectionString => $"Data Source={path}/{name}";
 
         public Database(DbContextOptions options) :base(options)
         {

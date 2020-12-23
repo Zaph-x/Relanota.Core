@@ -31,6 +31,8 @@ namespace Core.Objects.Entities
         {
             context.TryGetNoteTag(this, tag, out NoteTag noteTag);
             this.NoteTags.Add(noteTag);
+            context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
+            context.Update(this);
             context.SaveChanges();
         }
 
@@ -43,6 +45,7 @@ namespace Core.Objects.Entities
             {
                 context.NoteTags.Remove(noteTag);
             }
+            context.Update(this);
             context.SaveChanges();
         }
 
@@ -56,11 +59,26 @@ namespace Core.Objects.Entities
 
         public void Update(string content, string name, Database context)
         {
-            this.Name = name.Trim();
-            this.Content = content.Trim();
-            this.NoteTags = context.NoteTags.Where(nt => nt.NoteKey == this.Key).Include(nt => nt.Tag).ToList();
-            context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
-            context.SaveChanges();
+            if (context.Notes.FirstOrDefault(n => n.Key == this.Key) is Note entry)
+            {
+                this.Name = name.Trim();
+                this.Content = content.Trim();
+                this.NoteTags = context.NoteTags.Where(nt => nt.NoteKey == this.Key).Include(nt => nt.Tag).ToList();
+                context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
+                context.Entry(entry).CurrentValues.SetValues(this);
+                context.SaveChanges();
+            }
+        }
+
+        public void Update(Database context) {
+
+            if (context.Notes.FirstOrDefault(n => n.Key == this.Key) is Note entry) {
+                this.NoteTags = context.NoteTags.Where(nt => nt.NoteKey == this.Key).Include(nt => nt.Tag).ToList();
+                context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
+                context.Entry(entry).CurrentValues.SetValues(this);
+                context.SaveChanges();
+            }
+            
         }
 
         public void Save(string content, string name, Database context)
