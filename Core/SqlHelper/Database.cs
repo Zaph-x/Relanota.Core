@@ -73,7 +73,7 @@ namespace Core.SqlHelper
 
         public bool TryGetNote(string name, out Note note)
         {
-            note = this.Notes.FirstOrDefault(n => n.Name == name);
+            note = this.Notes.FirstOrDefault(n => n.Name.ToLower() == name.ToLower());
             return note != null;
         }
 
