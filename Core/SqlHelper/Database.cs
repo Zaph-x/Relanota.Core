@@ -91,7 +91,7 @@ namespace Core.SqlHelper
 
         public bool TryGetNoteTag(Note note, Tag tag, out NoteTag noteTag)
         {
-            noteTag = NoteTags.FirstOrDefault(nt => nt.Note.Name.ToLower() == note.Name.ToLower() && nt.Tag.Name.ToLower() == tag.Name.ToLower())
+            noteTag = NoteTags.FirstOrDefault(nt => nt.NoteKey == note.Key && nt.TagKey == tag.Key)
                       ?? new NoteTag() { Note = note, Tag = tag };
             return noteTag != null;
         }

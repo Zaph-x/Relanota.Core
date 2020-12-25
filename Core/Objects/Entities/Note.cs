@@ -19,7 +19,7 @@ namespace Core.Objects.Entities
         public string Content { get; set; }
         [NotMapped]
         public bool HasChanges { get; set; }
-        public IList<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
+        public List<NoteTag> NoteTags { get; set; } = new List<NoteTag>();
 
         /// <inheritdoc />
         public int CompareTo(object obj)
@@ -39,18 +39,16 @@ namespace Core.Objects.Entities
         public void RemoveTag(Tag tag, Database context)
         {
             context.TryGetNoteTag(this, tag, out NoteTag noteTag);
-            this.NoteTags.Remove(noteTag);
-            context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
-            if (!context.NoteTags.Local.Any(nt => nt.Tag == noteTag.Tag))
-            {
-                context.NoteTags.Remove(noteTag);
-            }
-            context.Update(this);
+
+            this.NoteTags.RemoveAll(nt => nt.TagKey == tag.Key);
+
+            context.TryUpdateManyToMany(context.NoteTags.Where(nt => nt.NoteKey == Key), this.NoteTags, x => x.TagKey);
             context.SaveChanges();
         }
 
 
-        public void CheckInlineTags(Match match, Database context) {
+        public void CheckInlineTags(Match match, Database context)
+        {
             context.TryGetTag(match.Groups[1].Value, out Tag tag);
             this.AddTag(tag, context);
             context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
@@ -70,15 +68,17 @@ namespace Core.Objects.Entities
             }
         }
 
-        public void Update(Database context) {
+        public void Update(Database context)
+        {
 
-            if (context.Notes.FirstOrDefault(n => n.Key == this.Key) is Note entry) {
+            if (context.Notes.FirstOrDefault(n => n.Key == this.Key) is Note entry)
+            {
                 this.NoteTags = context.NoteTags.Where(nt => nt.NoteKey == this.Key).Include(nt => nt.Tag).ToList();
                 context.TryUpdateManyToMany(this.NoteTags, this.NoteTags, x => x.TagKey);
                 context.Entry(entry).CurrentValues.SetValues(this);
                 context.SaveChanges();
             }
-            
+
         }
 
         public void Save(string content, string name, Database context)
@@ -126,13 +126,14 @@ namespace Core.Objects.Entities
             {
                 context.Notes.Remove(this);
                 context.SaveChanges();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
 #if DEBUG
                 callback("An exception occoured", e.Message);
 #endif
                 return;
-            } 
+            }
         }
 
         public void Save(Database context)
