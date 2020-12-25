@@ -17,7 +17,7 @@ namespace Core.SqlHelper
         public string name = "notes.db";
         public string ConnectionString => $"Data Source={path}/{name}";
 
-        public Database(DbContextOptions options) :base(options)
+        public Database(DbContextOptions options) : base(options)
         {
 
             path = Constants.DATABASE_PATH;
@@ -39,7 +39,7 @@ namespace Core.SqlHelper
         {
             optionsBuilder.UseSqlite(ConnectionString);
             base.OnConfiguring(optionsBuilder);
-            
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -74,6 +74,8 @@ namespace Core.SqlHelper
         public bool TryGetNote(string name, out Note note)
         {
             note = this.Notes.FirstOrDefault(n => n.Name.ToLower() == name.ToLower());
+            if (note != null)
+                note.TryGetFullNote(this, out note);
             return note != null;
         }
 
