@@ -103,7 +103,7 @@ namespace Core.Objects.Entities
                     note.Name = match.Groups[1].Value.Decompress();
                     note.Content = match.Groups[2].Value.Decompress();
                 }
-                catch (FormatException) {
+                catch {
                     try {
                         if (Convert.FromBase64String(match.Groups[1].Value) is byte[] noteName &&
                             Convert.FromBase64String(match.Groups[2].Value) is byte[] noteContent) {
