@@ -8,6 +8,7 @@ using Core.SqlHelper;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Core.ExtensionClasses;
 
 namespace Core.Objects.Entities
 {
@@ -98,11 +99,21 @@ namespace Core.Objects.Entities
             if (match.Success)
             {
                 note = new Note();
-                if (Convert.FromBase64String(match.Groups[1].Value) is byte[] noteName
-                    && Convert.FromBase64String(match.Groups[2].Value) is byte[] noteContent)
-                {
-                    note.Name = Encoding.Default.GetString(noteName);
-                    note.Content = Encoding.Default.GetString(noteContent);
+                try {
+                    note.Name = match.Groups[1].Value.Decompress();
+                    note.Content = match.Groups[2].Value.Decompress();
+                }
+                catch (FormatException) {
+                    try {
+                        if (Convert.FromBase64String(match.Groups[1].Value) is byte[] noteName &&
+                            Convert.FromBase64String(match.Groups[2].Value) is byte[] noteContent) {
+                            note.Name = Encoding.Default.GetString(noteName);
+                            note.Content = Encoding.Default.GetString(noteContent);
+                        }
+                    }
+                    catch {
+                        return false;
+                    }
                 }
                 return true;
             }
