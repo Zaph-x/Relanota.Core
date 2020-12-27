@@ -28,9 +28,15 @@ namespace Core.Objects.Entities
 
         public void Update(string description, string name, Database context)
         {
-            this.Name = name.Trim();
-            this.Description = description.Trim();
-            context.SaveChanges();
+            if (context.Tags.FirstOrDefault(t => t.Key == this.Key) is Tag tag)
+            {
+                this.Name = name.Trim();
+                this.Description = description.Trim();
+                context.Entry(tag).CurrentValues.SetValues(this);
+                context.SaveChanges();
+            }
+
+
         }
 
         public void Delete(Database context, Action<string, string> callback)
