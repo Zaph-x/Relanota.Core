@@ -99,6 +99,7 @@ namespace Core.Objects.Wrappers
         public new void Remove(T obj)
         {
             LastRemoveIndex = base.IndexOf(obj);
+            if (LastRemoveIndex == -1) return;
             lock (Lock)
             {
                 base.RemoveAt(LastRemoveIndex);
