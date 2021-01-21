@@ -147,6 +147,8 @@ namespace Core.Objects.Entities
             }
         }
 
+        public string GetImportLink() => $"note://import/|{Name.Compress()}|{Content.Compress()}|";
+
         public void Save(Database context)
         {
             Save(this.Content, this.Name, context);
