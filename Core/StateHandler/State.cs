@@ -105,13 +105,18 @@ namespace Core.StateHandler
                     /* Navigation States */
                     State.Navigation when _current == State.Ready => false,
                     State.RecentNavigation when _current == State.Navigation => false,
+                    State.RecentNavigation when _current == State.Ready => false,
+                    State.RecentNavigation when _current == State.NotSaved => false,
                     State.ListNavigation when _current == State.Ready => false,
                     State.SearchNavigation when _current == State.Ready => false,
                     State.Navigation when _current == State.NotSaved => false,
-                    State.RecentNavigation when _current == State.NotSaved => false,
                     State.ListNavigation when _current == State.NotSaved => false,
                     State.SearchNavigation when _current == State.NotSaved => false,
                     State.NavigationCancelled when _current == State.Ready => false,
+                    State.ProtocolImportNavigation when _current == State.Ready => false,
+                    State.ProtocolImportNavigation when _current == State.NotSaved => false,
+                    State.ProtocolNavigating when _current == State.Ready => false,
+                    State.ProtocolNavigating when _current == State.NotSaved => false,
 
                     /* Acceptable Error states */
                     State.LoadError when _current == State.SearchNavigation => false,
