@@ -153,5 +153,10 @@ namespace Core.Objects.Entities
         {
             Save(this.Content, this.Name, context);
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
