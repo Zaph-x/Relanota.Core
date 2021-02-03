@@ -64,5 +64,10 @@ namespace Core.Objects.Entities
         {
             this.Save(this.Description, this.Name, context);
         }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }
